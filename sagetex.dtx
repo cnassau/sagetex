@@ -139,7 +139,7 @@ suggestions.
 %</driver>
 % \fi
 %
-% \CheckSum{566}
+% \CheckSum{577}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -835,6 +835,30 @@ suggestions.
 % particular, you can use |\label| to mark line numbers in order to
 % |\ref|erence and |\pageref|erence them as usual. See the example file
 % to see this mechanism in action.
+%
+% Input lines that contain the string |#hidden| are evaluated, but not 
+% listed and also not included in the doctest file. Their output {\em is} shown,  
+% however. This can be used to fix some doctests that would otherwise fail:
+% for example,
+% \begin{quote}
+% |\begin{sagecommandline}|\\
+% |  sage: # the following line behaves differently in|\\
+% |  sage: # sage and the sagecommandline environment|\\
+% |  sage: # the hidden line fixes the resulting doctest|\\
+% |  sage: I=Integers() ; I|\\ 
+% |  sage: I #hidden|\\
+% |  Integer Ring|\\
+% |\end{sagecommandline}|
+% \end{quote}
+% gives
+\begin{sagecommandline}
+  sage: # the following line behaves differently in
+  sage: # sage and the sagecommandline environment
+  sage: # the hidden line fixes the resulting doctest
+  sage: I=Integers() ; I
+  sage: I #hidden
+  Integer Ring
+\end{sagecommandline}
 %
 % If you prefer to typeset the output in \LTX, you can set
 % \begin{quote}

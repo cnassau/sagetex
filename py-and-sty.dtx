@@ -30,6 +30,7 @@
 %    \begin{macrocode}
 \RequirePackage{listings}
 \RequirePackage{color}
+\RequirePackage{substr}
 \lstdefinelanguage{Sage}[]{Python}
   {morekeywords={False,sage,True},sensitive=true}
 \lstdefinelanguage{SageOutput}[]{}
@@ -721,6 +722,9 @@ try:^^J
 % typesets the sage output as text with python syntax highlighting.
 %    \begin{macrocode}
 \newcommand{\sagecommandlinetextoutput}{True}
+\catcode`\#=12
+\newcommand{\sagecommandlinehidden}{#hidden}
+\catcode`\#=6
 \newlength{\sagecommandlineskip}
 \setlength{\sagecommandlineskip}{8pt}
 \newenvironment{sagecommandline}{%
@@ -735,7 +739,7 @@ try:^^J
    \catcode`\^^M\active%
    \def\verbatim@processline{%
      \ST@wsf{\the\verbatim@line}%
-     \ST@wdf{\the\verbatim@line}%
+     \IfSubStringInString{\sagecommandlinehidden}{\the\verbatim@line}{}{\ST@wdf{\the\verbatim@line}}%
    }%
    \verbatim@start%
 }
@@ -1166,6 +1170,7 @@ class SageTeXProcessor():
       while True:
           # At each
           assert line.startswith("sage: ")
+          sage_hidden = (line.find('#hidden') >= 0)
           current_statement  = line[6:]
           current_lines = line
           for line in line_iterator:
@@ -1183,14 +1188,15 @@ class SageTeXProcessor():
           else:
               escapeoption = ''
 
-          begin, end = self.savecmd(counter,current_lines)
+          if not sage_hidden:
+             begin, end = self.savecmd(counter,current_lines)
 %    \end{macrocode}
 % If there's a space in the filename, we need to quote it for \TeX.
 %    \begin{macrocode}
-          filename = self.name + '.sagetex.scmd'
-          if ' ' in filename:
-              filename = '"' + filename + '"'
-          latex_string += r"\lstinputlisting[firstline={0},lastline={1},firstnumber={2},style=SageInput{3}]{{{4}}}".format(begin, end, begin-2, escapeoption, filename)+"\n"
+             filename = self.name + '.sagetex.scmd'
+             if ' ' in filename:
+                 filename = '"' + filename + '"'
+             latex_string += r"\lstinputlisting[firstline={0},lastline={1},firstnumber={2},style=SageInput{3}]{{{4}}}".format(begin, end, begin-2, escapeoption, filename)+"\n"
 
           current_statement = preparse(current_statement)
           try:  # is it an expression?
